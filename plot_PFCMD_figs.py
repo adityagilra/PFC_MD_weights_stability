@@ -52,27 +52,30 @@ def plot_axes(axs,MDstr,xorStr):
         meanActs[idx,0,:] = np.mean(fileDict['meanAct0'],axis=0)
         meanActs[idx,1,:] = np.mean(fileDict['meanAct1'],axis=0)
         fileDict.close()
-        fileDict = shelve.open('dataPFCMD/data_reservoir_PFC_MD'+\
-                        '-1.0_R'+str(RNG)+'.shelve')
-        meanActsBase[idx,0,:] = np.mean(fileDict['meanAct0'],axis=0)
-        meanActsBase[idx,1,:] = np.mean(fileDict['meanAct1'],axis=0)
-        fileDict.close()
+        #fileDict = shelve.open('dataPFCMD/data_reservoir_PFC_MD'+\
+        #                '-1.0_R'+str(RNG)+'.shelve')
+        #meanActsBase[idx,0,:] = np.mean(fileDict['meanAct0'],axis=0)
+        #meanActsBase[idx,1,:] = np.mean(fileDict['meanAct1'],axis=0)
+        #fileDict.close()
 
     if xorStr=='':
         Ncuespercycle = 2
         ylimMSE,ylimDW = 1,2
+        xTrials,Nneurons = 4500,1000
     else:
         Ncuespercycle = 4
         ylimMSE,ylimDW = 2,3
+        xTrials,Nneurons = 9000,1000
     trange = np.arange(MSEs.shape[1])*Ncuespercycle
     meanMSE = np.mean(MSEs,axis=0)
     stdMSE = np.std(MSEs,axis=0)
     axs[0].fill_between(trange,meanMSE-stdMSE,meanMSE+stdMSE,\
-                            color='#808080')
-    axs[0].plot(trange,meanMSE)
+                            color='#777777')
+    axs[0].plot(trange,meanMSE,color='k')
     axs[0].set_ylim([0,ylimMSE])
+    axs[0].set_xlim([0,xTrials])
     pltu.beautify_plot(axs[0])
-    pltu.axes_labels(axs[0],'trial num.','MSE',xpad=-2,ypad=-5)
+    pltu.axes_labels(axs[0],'Trial number','Mean Squared Error (MSE)',xpad=-2,ypad=-5)
 
     binW = 10
     #binW = 1
@@ -87,41 +90,58 @@ def plot_axes(axs,MDstr,xorStr):
     #axs[1].set_ylim([0,1])
     #pltu.beautify_plot(axs[1])
     #pltu.axes_labels(axs[1],'neuron #','mean activity (arb)')
-    for i in range(2):
-        cueAct = np.ones(Nsub//binW)*0.05
-        axs[1].plot(neurx[Nsub*i//binW:Nsub*(i+1)//binW],\
-                        cueAct,color=colorList[i],linewidth=3)
+    # plot mean activity for each neuron in context 1 for cues 0,1
+    for i in (0,1):
         meanAct = bin10(np.mean(meanActs[:,i,:],axis=0))
         stdAct = bin10(np.std(meanActs[:,i,:],axis=0))
         axs[1].fill_between(neurx,meanAct-stdAct,meanAct+stdAct,\
                         color=colorList2[i])
         axs[1].plot(neurx,meanAct,color=colorList[i])
+    # plot thick coloured lines to highlight cue neurons
+    for i in (1,0):
+        cueAct = np.ones(Nsub//binW)*0.05
+        axs[1].plot(neurx[Nsub*i//binW:Nsub*(i+1)//binW],\
+                        cueAct,color=colorList[i],linewidth=3)
     axs[1].set_ylim([0,1])
+    axs[1].set_xlim([0,Nneurons])
     pltu.beautify_plot(axs[1])
-    pltu.axes_labels(axs[1],'neuron num.','mean activity (arb)',\
+    pltu.axes_labels(axs[1],'Neuron number','Mean activity (au)',\
                         xpad=-2,ypad=-5)
 
     width = 0.5
-    for i in range(2):
-        axs[2].bar((width+width*i,), np.mean(deltaW[:,0,i],axis=0), width,
-                yerr=np.std(deltaW[:,0,i],axis=0),
-                align='center', color=colorList[i],
-                edgecolor=colorList[i], ecolor=colorList[i], capsize=5)
-        axs[2].bar((width*5+width*i,), np.mean(deltaW[:,1,i],axis=0), width,
-                yerr=np.std(deltaW[:,1,i],axis=0),
-                align='center', color=colorList[i],
-                edgecolor=colorList[i], ecolor=colorList[i], capsize=5)
+    colorList = (('k','r'),('r','k'))
+    for i in (0,1):
+        # plot change in weight per trial for output weights of two contexts,
+        #  when each context is being learned
+        #axs[2].bar((width+width*i,), np.mean(deltaW[:,0,i],axis=0), width,
+        #        yerr=np.std(deltaW[:,0,i],axis=0),
+        #        align='center', color=colorList[i],
+        #        edgecolor=colorList[i], ecolor=colorList[i], capsize=5)
+        #axs[2].bar((width*5+width*i,), np.mean(deltaW[:,1,i],axis=0), width,
+        #        yerr=np.std(deltaW[:,1,i],axis=0),
+        #        align='center', color=colorList[i],
+        #        edgecolor=colorList[i], ecolor=colorList[i], capsize=5)
+        axs[2].boxplot(deltaW[:,0,i],positions=(width+width*i,),
+                        widths=(width,),showcaps=False,whis='range',
+                        boxprops=dict(color=colorList[i][0]),
+                        whiskerprops=dict(color=colorList[i][0]),
+                        medianprops=dict(color=colorList[i][0]))
+        axs[2].boxplot(deltaW[:,1,i],positions=(width*5+width*i,),
+                        widths=(width,),showcaps=False,whis='range',
+                        boxprops=dict(color=colorList[i][1]),
+                        whiskerprops=dict(color=colorList[i][1]),
+                        medianprops=dict(color=colorList[i][1]))
     axs[2].set_ylim([0,ylimDW])
     pltu.beautify_plot(axs[2],xticks=(width*1.5,width*5.5))
     axs[2].set_xticklabels(('1','2'))
     # Note: arb unit for weights below is actually arb x 10^5
-    pltu.axes_labels(axs[2],'context','$\Delta w$/trial (arb)',\
+    pltu.axes_labels(axs[2],'Current context','$\Delta w$/trial (au)',\
                         xpad=-2,ypad=-5)
     
 if __name__ == "__main__":
     # choose one of the below
-    xorStr = '_xor'
-    #xorStr = ''
+    #xorStr = '_xor'
+    xorStr = ''
     fig = plt.figure(figsize=(pltu.twocolumnwidth,pltu.twocolumnwidth*0.75),
                         facecolor='w')
     for idx,MDstr in enumerate(('0.0','1.0')):
@@ -130,5 +150,5 @@ if __name__ == "__main__":
         ax3 = fig.add_subplot(2,3,idx*3+3)
         plot_axes((ax1,ax2,ax3),MDstr,xorStr)
     fig.tight_layout()
-    fig.savefig('fig_paper'+xorStr+'.png',
+    fig.savefig('fig_paper'+xorStr+'.eps', format='eps',
                 dpi=pltu.fig_dpi, facecolor='w', edgecolor='w')

@@ -17,8 +17,8 @@ class PFCMD():
 
         self.Nsub = 200                     # number of neurons per cue
         self.Ntasks = 2                     # number of contexts = number of MD cells.
-        #self.xorTask = False                # use xor Task or simple 1:1 map task
-        self.xorTask = True                 # use xor Task or simple 1:1 map task
+        self.xorTask = False                # use xor Task or simple 1:1 map task
+        #self.xorTask = True                 # use xor Task or simple 1:1 map task
         self.Ncues = self.Ntasks*2          # number of input cues
         self.Nneur = self.Nsub*(self.Ncues+1)# number of neurons
         if self.xorTask: self.inpsPerTask = 4# number of cue combinations per task
@@ -57,6 +57,7 @@ class PFCMD():
                                             #  possibly to make task representations disjoint (not just orthogonal)
 
         #self.MDstrength = None              # if None, use wPFC2MD, if not None as below, just use context directly
+        #self.MDstrength = 0.                # a parameter that controls how much the MD disjoints task representations.
         self.MDstrength = 1.                # a parameter that controls how much the MD disjoints task representations.
                                             #  zero would be a pure reservoir, 1 would be full MDeffect
                                             # -1 for zero recurrent weights
