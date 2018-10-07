@@ -7,8 +7,8 @@ import sys,shelve
 import plot_utils as pltu
 
 def plot_axes(axs,MDstr,xorStr):
-    #RNGs = ('0','1','2','3','4','5','6','7','8','9')
-    RNGs = ('0',)
+    RNGs = ('0','1','2','3','4','5','6','7','8','9')
+    #RNGs = ('0',)
     Ntrain = 1000
     Nsub = 200
     Nneur = 1000

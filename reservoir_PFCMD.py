@@ -608,11 +608,9 @@ class PFCMD():
                 MSEs[testi*NcuesTest+cuenum], corrects[testi*NcuesTest+cuenum] = \
                     self.performance(cuei,outs,errors,target)
 
-                #if cuePlot is not None:
-                #    if self.plotFigs and testi == 0 and taski==cuePlot[0] and cuei==cuePlot[1]:
-                #        ax = self.plot_column(self.fig,cues,routs,MDouts,outs,ploti=colNum)
-                if self.plotFigs and testi == 0 and taski==0 and cuei==colNum:
-                    ax = self.plot_column(self.fig,cues,routs,MDouts,outs,ploti=colNum)
+                if cuePlot is not None:
+                    if self.plotFigs and testi == 0 and taski==cuePlot[0] and cuei==cuePlot[1]:
+                        ax = self.plot_column(self.fig,cues,routs,MDouts,outs,ploti=colNum)
 
             if self.outExternal:
                 wOuts[testi,:,:] = self.wOut
@@ -902,14 +900,16 @@ class PFCMD():
             self.do_test(Ntest,self.MDeffect,True,False,cues,(0,2),2)
             self.do_test(Ntest,self.MDeffect,True,False,cues,(0,3),3)
         else:
-            self.learning_rate *= 100
-            # MDeffect and MDCueOff
-            self.do_test(Ntest,self.MDeffect,True,False,cues,self.cuePlot,2)
-            # MDeffect and MDDelayOff
-            # network doesn't (shouldn't) learn this by construction.
-            self.do_test(Ntest,self.MDeffect,False,True,cues,self.cuePlot,3)
-            # back to old learning rate
-            self.learning_rate *= 100.
+            self.do_test(Ntest,self.MDeffect,True,False,cues,(1,0),2)
+            self.do_test(Ntest,self.MDeffect,True,False,cues,(1,1),3)
+            #self.learning_rate *= 100
+            ## MDeffect and MDCueOff
+            #self.do_test(Ntest,self.MDeffect,True,False,cues,self.cuePlot,2)
+            ## MDeffect and MDDelayOff
+            ## network doesn't (shouldn't) learn this by construction.
+            #self.do_test(Ntest,self.MDeffect,False,True,cues,self.cuePlot,3)
+            ## back to old learning rate
+            #self.learning_rate *= 100.
         
         if self.plotFigs:
             self.fig.tight_layout()
@@ -948,7 +948,7 @@ if __name__ == "__main__":
     tauError = 0.001
     reLoadWeights = False
     saveData = not reLoadWeights
-    plotFigs = not saveData
+    plotFigs = True#not saveData
     pfcmd = PFCMD(PFC_G,PFC_G_off,learning_rate,
                     noiseSD,tauError,plotFigs=plotFigs,saveData=saveData)
     if not reLoadWeights:
