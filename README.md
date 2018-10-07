@@ -1,4 +1,5 @@
-# Stability of weights due to thalamus based switching of cortical neurons as in Rikhye, Gilra and Halassa, Nature Neuroscience 2018, Fig. 5b-d and Supplementary Fig. 16b-d.
+# Code for the computational model to avoid catastrophic forgetting as in Rikhye, Gilra and Halassa, Nature Neuroscience 2018, Fig. 5b-d and Supplementary Fig. 16b-d.  
+The medio-dorsal thalamus (MD) switches subsets of cortical (medial Pre-Frontal Cortex mPFC) neurons on and off depending on context, enabling other context weights to remain stable.  
   
 ## Installation:  
 You need to install python, numpy, scipy and matplotlib. The simulations were run on Ubuntu 18.04 on a server with CPU: Intel Xeon E5-2680 v3 (Haswell) 2x 12 cores, 24 threads, 2.5 GHz, 30 MB cache.  
@@ -21,4 +22,3 @@ To run the xor task (Suppl Fig 16b-d), set `self.xorTask = True` in reservoir_PF
   
 ## To reproduce Suppl. Figure 16b-d:  
 Repeat as above, except set `self.xorTask = True` in reservoir_PFCMD_simple.py and set `xorStr = '_xor'` in plot_PFCMD_figs.py.  
-  
